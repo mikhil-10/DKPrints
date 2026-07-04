@@ -7,6 +7,68 @@
   <title>DK.Prints — Print Your Imagination With Us</title>
   <meta name="description"
     content="DK.Prints — business cards, banners, wedding cards, t-shirts, mugs, stickers and posters. Order on WhatsApp, get it delivered.">
+
+  <!-- ==================== SEO: basic ==================== -->
+  <!-- Replace with your real domain once you have it -->
+  <link rel="canonical" href="https://dkprints.in/">
+  <meta name="robots" content="index, follow">
+  <meta name="keywords"
+    content="printing shop, business cards, flyers, banners, wedding invitations, t-shirt printing, mugs, stickers, poster printing, Mumbai print shop">
+  <meta name="author" content="DK.Prints">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%238B5CF6'/%3E%3Cstop offset='55%25' stop-color='%23FF4D8D'/%3E%3Cstop offset='100%25' stop-color='%23FF9142'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='%230A0A0F'/%3E%3Ctext x='50' y='68' font-family='Arial,Helvetica,sans-serif' font-weight='700' font-size='52' text-anchor='middle' fill='url(%23g)'%3EDK%3C/text%3E%3C/svg%3E">
+
+  <!-- ==================== SEO: social share previews ==================== -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="DK.Prints">
+  <meta property="og:title" content="DK.Prints — Print Your Imagination With Us">
+  <meta property="og:description"
+    content="Business cards, banners, wedding cards, t-shirts, mugs, stickers and posters — order on WhatsApp, get it delivered in 24–72 hours.">
+  <meta property="og:url" content="https://dkprints.in/">
+  <meta property="og:locale" content="en_IN">
+  <!-- Add a real 1200x630 image at this path on your host for the best-looking link previews -->
+  <meta property="og:image" content="https://dkprints.in/images/og-cover.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="DK.Prints — Print Your Imagination With Us">
+  <meta name="twitter:description"
+    content="Business cards, banners, wedding cards, t-shirts, mugs, stickers and posters — order on WhatsApp, get it delivered in 24–72 hours.">
+  <meta name="twitter:image" content="https://dkprints.in/images/og-cover.jpg">
+
+  <!-- ==================== SEO: LocalBusiness structured data ====================
+       Fill in your real address/geo once finalized — helps Google show hours,
+       phone, and address directly in search results. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "PrintShop",
+    "name": "DK.Prints",
+    "description": "Printing shop for business cards, flyers, banners, wedding invitations, t-shirts, mugs, stickers and posters.",
+    "url": "https://dkprints.in/",
+    "telephone": "+91-91374-14661",
+    "email": "ny135954@gmail.com",
+    "priceRange": "₹₹",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Mumbai",
+      "addressRegion": "Maharashtra",
+      "addressCountry": "IN"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        "opens": "10:00",
+        "closes": "20:00"
+      }
+    ],
+    "sameAs": []
+  }
+  </script>
+  <!-- ==================== end SEO additions ==================== -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -1546,6 +1608,34 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script>
+    (function () {
+      // Disable right-click context menu
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      // Block common shortcuts: F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S
+      document.addEventListener('keydown', (e) => {
+        const key = e.key.toLowerCase();
+        if (
+          key === 'f12' ||
+          (e.ctrlKey && e.shiftKey && ['i', 'j', 'c'].includes(key)) ||
+          (e.ctrlKey && ['u', 's'].includes(key)) ||
+          (e.metaKey && e.altKey && ['i', 'j', 'c'].includes(key)) // Mac equivalents
+        ) {
+          e.preventDefault();
+        }
+      });
+
+      // Rough devtools-open detection (checks window size delta).
+      // Not reliable on all browsers/devices — treat as a soft deterrent only.
+      const threshold = 160;
+      setInterval(() => {
+        const widthDiff = window.outerWidth - window.innerWidth > threshold;
+        const heightDiff = window.outerHeight - window.innerHeight > threshold;
+        if (widthDiff || heightDiff) {
+          document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:18px;color:#F5F4F8;background:#0A0A0F;text-align:center;padding:20px;">Developer tools are disabled on this site.</div>';
+        }
+      }, 1000);
+    })();
     // ---------- Preloader ----------
     document.documentElement.classList.add('locked');
     (function initPreloader() {
