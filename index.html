@@ -160,6 +160,117 @@
       z-index: 0;
     }
 
+    /* ============ PRELOADER ============ */
+    html.locked,
+    html.locked body {
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .7s var(--ease), visibility .7s var(--ease);
+    }
+
+    .preloader.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .preloader-mark {
+      display: flex;
+      font-family: var(--disp);
+      font-weight: 700;
+      font-size: clamp(38px, 8vw, 84px);
+      letter-spacing: -0.01em;
+    }
+
+    .preloader-mark .ch {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(26px);
+      animation: letter-in .6s var(--ease) forwards;
+    }
+
+    .preloader-mark .ch.dot {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    @keyframes letter-in {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .preloader-bar {
+      width: 160px;
+      height: 3px;
+      border-radius: 3px;
+      background: var(--line);
+      overflow: hidden;
+      margin-top: 26px;
+    }
+
+    .preloader-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--grad);
+      animation: bar-fill 1.3s var(--ease) .5s forwards;
+    }
+
+    @keyframes bar-fill {
+      to {
+        width: 100%;
+      }
+    }
+
+    .preloader-tag {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-top: 18px;
+      opacity: 0;
+      animation: tag-in .6s var(--ease) 1s forwards;
+    }
+
+    @keyframes tag-in {
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .preloader-mark .ch {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+
+      .preloader-bar-fill {
+        animation: none;
+        width: 100%;
+      }
+
+      .preloader-tag {
+        animation: none;
+        opacity: 1;
+      }
+    }
+
     /* ============ NAV ============ */
     header {
       position: sticky;
@@ -254,7 +365,7 @@
     /* ============ HERO ============ */
     .hero {
       position: relative;
-      padding: 13px 0 90px;
+      padding: 120px 0 90px;
       overflow: hidden;
     }
 
@@ -1087,6 +1198,14 @@
 
 <body>
 
+  <div class="preloader" id="preloader">
+    <div class="preloader-mark" id="preloaderMark"></div>
+    <div class="preloader-bar">
+      <div class="preloader-bar-fill"></div>
+    </div>
+    <div class="preloader-tag">Print Your Imagination With Us</div>
+  </div>
+
   <div class="progress" id="progress"></div>
 
   <header>
@@ -1333,7 +1452,7 @@
           <p style="color:var(--text-soft);margin-top:14px;max-width:44ch;">Fill this in and it'll land straight in our
             inbox — or skip the form and message us on WhatsApp for a faster reply.</p>
 
-          <form class="form" id="contactForm" action="https://formsubmit.co/ny135954@gmail.com" method="POST"
+          <form class="form" id="contactForm" action="https://formsubmit.co/YOUR-EMAIL@example.com" method="POST"
             style="margin-top:30px;">
             <!-- FormSubmit config -->
             <input type="hidden" name="_subject" value="New enquiry from DK.Prints website">
@@ -1346,7 +1465,7 @@
             </div>
             <div class="field">
               <label for="email">Email Address</label>
-              <input id="email" name="Email" type="email" required placeholder="ny135954@gmail.com">
+              <input id="email" name="Email" type="email" required placeholder="you@example.com">
             </div>
             <div class="field">
               <label for="phone">Phone / WhatsApp Number</label>
@@ -1376,7 +1495,7 @@
               <button type="submit" class="btn btn-solid">Send Enquiry</button>
               <span class="form-note">or email us directly —</span>
               <a id="mailFallback" href="#" class="form-note"
-                style="border-bottom:1px solid var(--text-soft);">ny135954@gmail.com</a>
+                style="border-bottom:1px solid var(--text-soft);">hello@dkprints.com</a>
             </div>
             <span class="form-status" id="formStatus"></span>
           </form>
@@ -1389,7 +1508,7 @@
           </div>
           <div class="contact-card">
             <span class="eyebrow">Email</span>
-            <p><a id="emailLink" href="#">ny135954@gmail.com</a></p>
+            <p><a id="emailLink" href="#">hello@dkprints.com</a></p>
           </div>
           <div class="contact-card">
             <span class="eyebrow">Shop Hours</span>
@@ -1428,9 +1547,34 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
   <script>
+    // ---------- Preloader ----------
+    document.documentElement.classList.add('locked');
+    (function initPreloader() {
+      const mark = document.getElementById('preloaderMark');
+      const text = "DK.Prints";
+      text.split('').forEach((ch, i) => {
+        const span = document.createElement('span');
+        span.className = 'ch' + (ch === '.' ? ' dot' : '');
+        span.textContent = ch;
+        span.style.animationDelay = (i * 0.05) + 's';
+        mark.appendChild(span);
+      });
+
+      const hide = () => {
+        const pre = document.getElementById('preloader');
+        pre.classList.add('hide');
+        document.documentElement.classList.remove('locked');
+        setTimeout(() => pre.remove(), 800);
+      };
+      // let the letters + bar animation play, then reveal the site
+      window.addEventListener('load', () => setTimeout(hide, 1900));
+      // safety net in case 'load' is delayed by slow assets
+      setTimeout(hide, 4000);
+    })();
+
     // ---------- CONFIG: edit these two lines with your real details ----------
-    const WHATSAPP_NUMBER = "919137414661"; // country code + number, no + or spaces
-    const EMAIL_ADDRESS = "ny135954@gmail.com";
+    const WHATSAPP_NUMBER = "919876543210"; // country code + number, no + or spaces
+    const EMAIL_ADDRESS = "hello@dkprints.com";
     // ---------------------------------------------------------------------
 
     // ---------- FIREBASE CONFIG: paste the values from your Firebase project ----------
