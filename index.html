@@ -1607,7 +1607,7 @@
             const data = doc.data();
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            item.innerHTML = `<img src="${data.path}" alt="${(data.caption || 'DK.Prints work').replace(/"/g, '&quot;')}" loading="lazy">
+            item.innerHTML = `<img src="Auth/${data.path}" alt="${(data.caption || 'DK.Prints work').replace(/"/g, '&quot;')}" loading="lazy">
             ${data.caption ? `<div class="gallery-caption">${data.caption}</div>` : ''}`;
             grid.appendChild(item);
             const io2 = new IntersectionObserver((entries) => {
