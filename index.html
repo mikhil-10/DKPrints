@@ -365,7 +365,7 @@
     /* ============ HERO ============ */
     .hero {
       position: relative;
-      padding: 120px 0 90px;
+      padding: 15px 0 90px;
       overflow: hidden;
     }
 
@@ -1452,8 +1452,7 @@
           <p style="color:var(--text-soft);margin-top:14px;max-width:44ch;">Fill this in and it'll land straight in our
             inbox — or skip the form and message us on WhatsApp for a faster reply.</p>
 
-          <form class="form" id="contactForm" action="https://formsubmit.co/YOUR-EMAIL@example.com" method="POST"
-            style="margin-top:30px;">
+          <form class="form" id="contactForm" method="POST" style="margin-top:30px;">
             <!-- FormSubmit config -->
             <input type="hidden" name="_subject" value="New enquiry from DK.Prints website">
             <input type="hidden" name="_template" value="table">
@@ -1465,7 +1464,7 @@
             </div>
             <div class="field">
               <label for="email">Email Address</label>
-              <input id="email" name="Email" type="email" required placeholder="you@example.com">
+              <input id="email" name="Email" type="email" required placeholder="ny135954@gmail.com">
             </div>
             <div class="field">
               <label for="phone">Phone / WhatsApp Number</label>
@@ -1495,7 +1494,7 @@
               <button type="submit" class="btn btn-solid">Send Enquiry</button>
               <span class="form-note">or email us directly —</span>
               <a id="mailFallback" href="#" class="form-note"
-                style="border-bottom:1px solid var(--text-soft);">hello@dkprints.com</a>
+                style="border-bottom:1px solid var(--text-soft);">ny135954@gmail.com</a>
             </div>
             <span class="form-status" id="formStatus"></span>
           </form>
@@ -1508,7 +1507,7 @@
           </div>
           <div class="contact-card">
             <span class="eyebrow">Email</span>
-            <p><a id="emailLink" href="#">hello@dkprints.com</a></p>
+            <p><a id="emailLink" href="#">ny135954@gmail.com</a></p>
           </div>
           <div class="contact-card">
             <span class="eyebrow">Shop Hours</span>
@@ -1573,8 +1572,8 @@
     })();
 
     // ---------- CONFIG: edit these two lines with your real details ----------
-    const WHATSAPP_NUMBER = "919876543210"; // country code + number, no + or spaces
-    const EMAIL_ADDRESS = "hello@dkprints.com";
+    const WHATSAPP_NUMBER = "919137414661"; // country code + number, no + or spaces
+    const EMAIL_ADDRESS = "ny135954@gmail.com";
     // ---------------------------------------------------------------------
 
     // ---------- FIREBASE CONFIG: paste the values from your Firebase project ----------
@@ -1634,6 +1633,7 @@
     document.getElementById('mailFallback').href = `mailto:${EMAIL_ADDRESS}`;
     document.getElementById('mailFallback').textContent = EMAIL_ADDRESS;
     document.getElementById('emailLink').textContent = EMAIL_ADDRESS;
+    document.getElementById('contactForm').action = `https://formsubmit.co/ajax/${EMAIL_ADDRESS}`;
 
     document.querySelectorAll('.card-order').forEach(link => {
       link.addEventListener('click', (e) => {
@@ -1674,11 +1674,34 @@
       io.observe(c);
     });
 
-    // contact form -> friendly inline status (form still submits to FormSubmit)
+    // contact form -> submit quietly in the background, stay on the page
     const form = document.getElementById('contactForm');
     const status = document.getElementById('formStatus');
-    form.addEventListener('submit', () => {
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      status.style.color = 'var(--text-soft)';
       status.textContent = 'Sending your enquiry…';
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form)
+        });
+        if (!res.ok) throw new Error('Request failed');
+        status.style.color = 'var(--cyan)';
+        status.textContent = "Thanks! Your enquiry is on its way — we'll reply soon.";
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        status.style.color = 'var(--pink)';
+        status.textContent = `Something went wrong — please email us directly at ${EMAIL_ADDRESS}.`;
+      } finally {
+        submitBtn.disabled = false;
+      }
     });
   </script>
 
