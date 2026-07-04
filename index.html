@@ -1651,6 +1651,7 @@
 
       const hide = () => {
         const pre = document.getElementById('preloader');
+        if (!pre) return;
         pre.classList.add('hide');
         document.documentElement.classList.remove('locked');
         setTimeout(() => pre.remove(), 800);
