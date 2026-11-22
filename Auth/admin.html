@@ -432,6 +432,52 @@
       font-size: 20px;
       margin: 0 0 16px;
     }
+
+    /* ---- video manager ---- */
+    .video-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 40px;
+    }
+
+    .video-card .field {
+      margin-bottom: 12px;
+    }
+
+    .video-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .video-actions .btn {
+      width: auto;
+      padding: 11px 22px;
+    }
+
+    .video-status {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--cyan);
+    }
+
+    .video-preview {
+      margin-top: 16px;
+      max-width: 420px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #000;
+      display: none;
+    }
+
+    .video-preview video {
+      width: 100%;
+      display: block;
+    }
   </style>
 </head>
 
@@ -469,6 +515,26 @@
           <h1 style="margin-top:10px;font-size:28px;">Manage gallery photos</h1>
         </div>
         <button class="btn btn-ghost" id="signOutBtn">Sign out</button>
+      </div>
+
+      <!-- VIDEO -->
+      <h2 class="section-title">Website video</h2>
+      <div class="video-card">
+        <div class="field">
+          <label for="videoPath">Video file path</label>
+          <input id="videoPath" type="text" placeholder="videos/shop.mp4">
+        </div>
+        <div class="hint" style="color:var(--text-soft);font-size:12px;margin-bottom:14px;">Upload the MP4 file to this
+          path on your host first (same folder style as the gallery images), then click Save video. It plays
+          automatically on the live site.</div>
+        <div class="video-actions">
+          <button class="btn" id="saveVideoBtn" type="button">Save video</button>
+          <button class="btn btn-ghost" id="removeVideoBtn" type="button">Remove video</button>
+          <span class="video-status" id="videoStatus"></span>
+        </div>
+        <div class="video-preview" id="videoPreview">
+          <video id="videoPreviewEl" controls muted playsinline preload="metadata"></video>
+        </div>
       </div>
 
       <div class="field-row">
@@ -563,6 +629,7 @@
         loginScreen.style.display = 'none';
         panel.style.display = 'block';
         watchGallery();
+        watchVideo();
       } else {
         loginScreen.style.display = 'block';
         panel.style.display = 'none';
@@ -635,6 +702,66 @@
       });
 
       fileInput.value = '';
+    }
+
+    // ---------- Video ----------
+    let videoWatching = false;
+    function watchVideo() {
+      if (videoWatching) return;
+      videoWatching = true;
+      const pathInput = document.getElementById('videoPath');
+      const saveBtn = document.getElementById('saveVideoBtn');
+      const removeBtn = document.getElementById('removeVideoBtn');
+      const statusEl = document.getElementById('videoStatus');
+      const preview = document.getElementById('videoPreview');
+      const previewEl = document.getElementById('videoPreviewEl');
+
+      db.collection('settings').doc('video').onSnapshot((snap) => {
+        const path = snap.exists ? snap.data().path : '';
+        if (path) {
+          pathInput.value = path;
+          previewEl.src = path;
+          preview.style.display = 'block';
+        } else {
+          previewEl.removeAttribute('src');
+          preview.style.display = 'none';
+        }
+      }, (err) => {
+        console.error(err);
+        statusEl.style.color = 'var(--pink)';
+        statusEl.textContent = 'Could not load video setting.';
+      });
+
+      saveBtn.addEventListener('click', () => {
+        const path = pathInput.value.trim();
+        if (!path) return;
+        saveBtn.disabled = true;
+        statusEl.style.color = 'var(--cyan)';
+        statusEl.textContent = 'Saving…';
+        db.collection('settings').doc('video').set({
+          path,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          statusEl.textContent = 'Saved ✓';
+        }).catch((err) => {
+          statusEl.style.color = 'var(--pink)';
+          statusEl.textContent = 'Failed to save.';
+          console.error(err);
+        }).finally(() => { saveBtn.disabled = false; });
+      });
+
+      removeBtn.addEventListener('click', () => {
+        if (!confirm('Remove the video from the website? (The file itself stays on your host.)')) return;
+        db.collection('settings').doc('video').delete().then(() => {
+          pathInput.value = '';
+          statusEl.style.color = 'var(--cyan)';
+          statusEl.textContent = 'Removed ✓';
+        }).catch((err) => {
+          statusEl.style.color = 'var(--pink)';
+          statusEl.textContent = 'Failed to remove.';
+          console.error(err);
+        });
+      });
     }
 
     // ---------- Manage existing photos ----------
