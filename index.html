@@ -927,6 +927,44 @@
       }
     }
 
+    /* ============ VIDEO ============ */
+    .video-box {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: 0 12px 40px rgba(139, 92, 246, .18);
+    }
+
+    .video-box iframe,
+    .video-box video {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      background: #000;
+    }
+
+    .sound-btn {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: rgba(10, 10, 15, .7);
+      backdrop-filter: blur(6px);
+      color: var(--text);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
     /* ============ PROCESS ============ */
     .process {
       display: grid;
@@ -1531,6 +1569,23 @@
       </div>
     </section>
 
+    <!-- VIDEO -->
+    <section id="video">
+      <div class="wrap">
+        <div class="sec-head">
+          <div>
+            <span class="eyebrow">Watch</span>
+            <h2>See us in action.</h2>
+          </div>
+          <p>A quick look at how your ideas turn into finished prints at our workshop.</p>
+        </div>
+        <div class="video-box">
+          <video id="autoVideo" muted loop playsinline preload="auto"></video>
+          <button type="button" class="sound-btn" id="soundBtn" aria-label="Toggle sound">🔇</button>
+        </div>
+      </div>
+    </section>
+
     <!-- PROCESS -->
     <section id="process">
       <div class="wrap">
@@ -1842,6 +1897,35 @@
     const igLink = document.getElementById('instagramLink');
     if (YOUTUBE_URL) { ytLink.href = YOUTUBE_URL; } else { ytLink.style.display = 'none'; }
     if (INSTAGRAM_URL) { igLink.href = INSTAGRAM_URL; } else { igLink.style.display = 'none'; }
+
+    // ---------- Video ----------
+    // Path to your video file, same way as your gallery images (e.g. "Auth/videos/shop.mp4")
+    const VIDEO_SRC = "Auth/videos/shop.mp4";
+
+    (function loadVideo() {
+      const section = document.getElementById('video');
+      const video = document.getElementById('autoVideo');
+      const soundBtn = document.getElementById('soundBtn');
+      if (!VIDEO_SRC) { section.style.display = 'none'; return; }
+
+      video.src = VIDEO_SRC;
+
+      // play only while on screen, pause when scrolled away (saves data/battery)
+      const vio = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) { video.play().catch(() => { }); }
+          else { video.pause(); }
+        });
+      }, { threshold: 0.35 });
+      vio.observe(video);
+
+      soundBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        soundBtn.textContent = video.muted ? '🔇' : '🔊';
+        if (!video.paused) return;
+        video.play().catch(() => { });
+      });
+    })();
 
     document.querySelectorAll('.card-order').forEach(link => {
       link.addEventListener('click', (e) => {
